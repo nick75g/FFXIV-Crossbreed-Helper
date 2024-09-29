@@ -277,7 +277,6 @@ def shortestpath(inputlist, results, gather = True):
         for pair in inputpairs: # for each pair of seeds in the inventory
             if pair in temppairs: # if that pair can produce the result
                 output[item].append(pair) # append the pair to outputlist
-                return output
             else:
                 for otherpair in temppairs: # else, for each pair that can produce the target
                     temppair = [] # create a temppair
@@ -329,7 +328,6 @@ def stepamount(inputmap):
         optionlist = inputmap[key] # create list of each possible source for seed
         for item in optionlist: # for each source
             depth = recursivedepth(item) 
-            print(str(item) + ": " + str(depth))
             try:
                 tempmap[depth].append(item)
             except KeyError:
@@ -642,10 +640,10 @@ def allpossibles(inputlist, depth, gatherSeeds = True):
     return output
 
 if __name__ == "__main__":
-    test = ["Blood Currant Seeds", "Allagan Melon Seeds"]
-    testresult = ["Apricot Kernels"] # Blood Pepper Seeds
+    test = ["Krakka Root Seeds", "Mirror Apple Seeds", "Thavnairian Onion Seeds", "Chamomile Seeds", "Gysahl Green Seeds"]
+    testresult = ["Curiel Root Seeds"] # Blood Pepper Seeds
 
-    output = calculatesteps(test, testresult, True)
+    output = calculatesteps(test, testresult, False)
 
     #print(allpossibles(test, 10, True))
 
