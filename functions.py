@@ -1,15 +1,23 @@
 import json
 
-with open("_internal/importantfiles/crossbreeding.json", "r", encoding = "utf-8") as cfpr:
+with open("_internal/importantfiles/crossbreeding.json",
+          "r",
+          encoding = "utf-8") as cfpr:
     crossbreeds = json.load(cfpr)
 
-with open("_internal/importantfiles/othersources.json", "r", encoding = "utf-8") as ofpr:
+with open("_internal/importantfiles/othersources.json",
+          "r",
+          encoding = "utf-8") as ofpr:
     other = json.load(ofpr)
 
-with open("_internal/importantfiles/onlycross.json", "r", encoding = "utf-8") as ocfpr:
+with open("_internal/importantfiles/onlycross.json",
+          "r",
+          encoding = "utf-8") as ocfpr:
     onlycross = json.load(ocfpr)
 
-with open("_internal/importantfiles/gatherlist.json", "r", encoding = "utf-8") as gfpr:
+with open("_internal/importantfiles/gatherlist.json",
+          "r",
+          encoding = "utf-8") as gfpr:
     gatherlist = json.load(gfpr)
 
 # Function 1: Given Input and Output, return Path from Input and Output
@@ -51,19 +59,23 @@ def check_crosses(inputlist, result):
     for seed in result:
         output[seed] = []
 
-        potentialseeds = {} # for target seed, create list in output and empty map
+        potentialseeds = {} # for target seed, create list in output and
+                            # empty map
 
         pairs = make_pairs(inputlist) # make pairs from inventory seeds
 
         for key in crossbreeds: # for every seed
             temp = crossbreeds[key].copy()
             for pair in pairs:
-                if pair in temp or list(reversed(pair)) in temp: # if that seed can be made by seeds in inventory
+                # if that seed can be made by seeds in inventory
+                if pair in temp or list(reversed(pair)) in temp:
                     try:
+                        # add it to seeds that can be made,
+                        # and append the pair to the option list
                         potentialseeds[key].append(pair)
                     except KeyError:
                         potentialseeds[key] = []
-                        potentialseeds[key].append(pair) # add it to seeds that can be made, and append the pair to the option list
+                        potentialseeds[key].append(pair)
 
     allseeds = True
 
@@ -73,19 +85,29 @@ def check_crosses(inputlist, result):
 
     if allseeds:
         for seed in output:
-            output[seed] = potentialseeds[seed] # if every target was made, set output of seed to the option list for that seed
+            # if every target was made, set output of seed to the option list
+            # for that seed
+            output[seed] = potentialseeds[seed]
     else:
-        newlist = inputlist + list(potentialseeds.keys()) # if not, make a new "inventory" out of seeds that can be made
+        # if not, make a new "inventory" out of seeds that can be made
+        newlist = inputlist + list(potentialseeds.keys())
         newlist = list(dict.fromkeys(newlist)) # and eliminate any duplicates
         if newlist == inputlist:
             return output # if no new seeds can be made, return the output
-        newtry = check_crosses(newlist, result) # check the new list for potential crosses
-        newkeys = list(newtry.keys()) # list of all the seeds that can be made using the new inventory
+        # check the new list for potential crosses
+        newtry = check_crosses(newlist, result)
+        # list of all the seeds that can be made using the new inventory
+        newkeys = list(newtry.keys())
         for key in newkeys: # for each of those seeds
-            for pair in newtry[key]: # look at every pair that can produce that seed
-                for seed in pair: # for every seed in every such pair
-                    if seed not in inputlist and seed not in newkeys: # if the seed is not in the original inventory
-                        newtry.update(check_crosses(inputlist, [seed])) # update the potential crosses with a dict on how to get to the seed in question
+            # look at every pair that can produce that seed
+            for pair in newtry[key]:
+                # for every seed in every such pair
+                for seed in pair:
+                    # if the seed is not in the original inventory
+                    if seed not in inputlist and seed not in newkeys:
+                        # update the potential crosses with a dict on how to
+                        # get to the seed in question
+                        newtry.update(check_crosses(inputlist, [seed]))
         output.update(newtry)
 
     for key in output:
@@ -270,7 +292,8 @@ def shortestpath(inputlist, results, gather = True):
 
     for item in results: # for each target item
         output[item] = [] # create an empty list in output
-        temppairs = inputmap[item].copy() # create a copy of a list of all pairs that produce the target item
+        # create a copy of a list of all pairs that produce the target item
+        temppairs = inputmap[item].copy()
         if len(inputmap[item][0]) == 1:
             output[item].append(inputmap[item][0])
             return output
@@ -278,7 +301,8 @@ def shortestpath(inputlist, results, gather = True):
             if pair in temppairs: # if that pair can produce the result
                 output[item].append(pair) # append the pair to outputlist
             else:
-                for otherpair in temppairs: # else, for each pair that can produce the target
+                # else, for each pair that can produce the target
+                for otherpair in temppairs:
                     temppair = [] # create a temppair
                     for x in otherpair: # for each seed in the otherpair
                         if x not in inputlist: # if seed not in inputlist
@@ -304,11 +328,17 @@ def recursivedepth(inputlist):
         if isinstance(item, dict): # if its a complex seed:
             for key in item:
                 templist = []
-                for pair in item[key]: # then for each pair that can create the seed
-                    if len(pair) == 2: # if the pair is indeed a pair (and not a place to gather from)
+                # then for each pair that can create the seed
+                for pair in item[key]:
+                    # if the pair is indeed a pair (and not a place to gather
+                    # from)
+                    if len(pair) == 2:
                         for seed in pair: # then for each seed in that pair
-                            if not (isinstance(seed, str) and seed in crossbreeds): # if that seed is not in crossbreeds
-                                templist.append(recursivedepth([seed])) # append to templist
+                            # if that seed is not in crossbreeds
+                            if not (isinstance(seed, str)
+                                    and seed in crossbreeds):
+                                # append to templist
+                                templist.append(recursivedepth([seed]))
                     else:
                         templist.append(recursivedepth(pair))
                 if templist:
@@ -325,7 +355,8 @@ def stepamount(inputmap):
 
     for key in inputmap: # for each seed in inputmap:
         tempmap = {} # create temporary output map for seed
-        optionlist = inputmap[key] # create list of each possible source for seed
+        # create list of each possible source for seed
+        optionlist = inputmap[key]
         for item in optionlist: # for each source
             depth = recursivedepth(item) 
             try:
@@ -360,19 +391,28 @@ def stepfrommap(inputmap):
                 output = stepfrommap(pair[0]) + stepfrommap(pair[1])
                 for seedzero in pair[0]:
                     for seedone in pair[1]:
-                        output.append("Cross " + seedzero + " with " + seedone + " to get " + key)
+                        output.append("Cross " + seedzero +
+                                      " with " + seedone +
+                                      " to get " + key)
             elif zerodict:
                 output = stepfrommap(pair[0])
                 for seed in pair[0]:
-                    output.append("Cross " + seed + " with " + pair[1] + " to get " + key)
+                    output.append("Cross " + seed +
+                                  " with " + pair[1] +
+                                  " to get " + key)
             elif onedict:
                 output = stepfrommap(pair[1])
                 for seed in pair[1]:
-                    output.append("Cross " + seed + " with " + pair[0] + " to get " + key)
+                    output.append("Cross " + seed +
+                                  " with " + pair[0] +
+                                  " to get " + key)
             else:
-                output.append("Cross " + pair[0] + " with " + pair[1] + " to get " + key)
+                output.append("Cross " + pair[0] +
+                              " with " + pair[1] +
+                              " to get " + key)
         elif isinstance(pair, str):
-            output.append("Gather " + key + " from: " + pair)
+            output.append("Gather " + key +
+                          " from: " + pair)
     return output
 
 def returnsteps(inputlist):
@@ -390,7 +430,8 @@ def returnsteps(inputlist):
             currentstep.append(item)
 
     if len(currentstep) == 2:
-        finalstring = "Cross " + currentstep[0] + " with " + currentstep[1]
+        finalstring = ("Cross " + currentstep[0] +
+                       " with " + currentstep[1])
     
     output.append(finalstring)
 
@@ -417,21 +458,29 @@ def cleanupmap(inputmap):
                     templist.append(poss)
                 else:
                     for item in poss:
-                        if isinstance(item, str) and templist == [] and temppair == []:
+                        if (isinstance(item, str)
+                                and templist == []
+                                and temppair == []):
                             temppair.append(item)
-                        elif isinstance(item, str) and templist == [] and temppair != []:
+                        elif (isinstance(item, str)
+                              and templist == []
+                              and temppair != []):
                             temppair.append(item)
                             templist.append(temppair)
                             temppair = []
                         elif isinstance(item, str) and templist != []:
                             for pair in templist:
                                 pair.append(item)
-                        elif isinstance(item, dict) and temppair == [] and templist == []:
+                        elif (isinstance(item, dict)
+                              and temppair == []
+                              and templist == []):
                             item = cleanupmap(item)
                             seed = list(item.keys())[0]
                             for pair in item[seed]:
                                 templist.append([{seed: pair}])
-                        elif isinstance(item, dict) and temppair != [] and templist == []:
+                        elif (isinstance(item, dict)
+                              and temppair != []
+                              and templist == []):
                             item = cleanupmap(item)
                             seed = list(item.keys())[0]
                             for pair in item[seed]:
@@ -468,17 +517,26 @@ def steplist(inputmap):
         for stepnumber in inputmap[result]:
             numofpaths = len(inputmap[result][stepnumber])
             if numofpaths == 0:
-                keystring = "There is no way to make " + result + " with the given seeds."
+                keystring = ("There is no way to make " + result +
+                             " with the given seeds.")
             elif numofpaths == 1:
-                keystring = "There is one way to make " + result + " in " + str(stepnumber) + " steps:"
+                keystring = ("There is one way to make " + result +
+                             " in " + str(stepnumber) +
+                             " steps:")
             elif numofpaths > 25:
                 numstring = str(numofpaths)
                 if numofpaths > 500:
                     numstring = "(over) 500"
-                keystring = "There are " + numstring + " ways to make " + result + " in " + str(stepnumber) + " steps, here are 10 of them:"
+                keystring = ("There are " + numstring +
+                             " ways to make " + result +
+                             " in " + str(stepnumber) +
+                             " steps, here are 10 of them:")
                 inputmap[result][stepnumber] = inputmap[result][stepnumber][:10]
             else:
-                keystring = "There are " + str(numofpaths) + " ways to make " + result + " in " + str(stepnumber) + " steps:"
+                keystring = ("There are " + str(numofpaths) +
+                             " ways to make " + result +
+                             " in " + str(stepnumber) +
+                             " steps:")
             steps = stepnumber
         output[keystring] = []
         for item in inputmap[result][steps]:
@@ -507,7 +565,9 @@ def calculatesteps(inputlist, resultlist, gather):
         
         if not found:
             print("Seed too complicated")
-            outputtemp.update({item + " takes over 8 steps and is a bit too complicated for this silly little program...":[]})
+            outputtemp.update({item + " takes over 8 steps and is a bit too "
+                                      "complicated for this silly little "
+                                      "program...":[]})
         else:
             print("Calculating shortest path for " + item + "...")
             outputtemp = shortestpath(inputlist, [item], gather)
@@ -521,7 +581,8 @@ def calculatesteps(inputlist, resultlist, gather):
 
     return output
 
-# Function 2: Given a seed, return all seeds needed to breed seed that can also be collected from other sources
+# Function 2: Given a seed, return all seeds needed to breed seed that can
+# also be collected from other sources
 
 def seedsources(inputlist):
 
@@ -539,7 +600,8 @@ def seedsources(inputlist):
             keystring = item + " can already be gathered! Here's the source:"
             outputlist = other[item]
         elif item in gatherlist:
-            keystring = "Here are possible combinations of seeds you need for " + item + " and where you get them:"
+            keystring = ("Here are possible combinations of seeds you need "
+                         "for ") + item + " and where you get them:"
             for pair in gatherlist[item]:
                 temppair = []
                 for seed in pair:
@@ -549,7 +611,8 @@ def seedsources(inputlist):
     
     return output
 
-# Function 3: Given a list of Seeds and a depth, return all seeds that can be bred in "depth" amount of steps
+# Function 3: Given a list of Seeds and a depth, return all seeds that can be
+# bred in "depth" amount of steps
 
 def allpossibles(inputlist, depth, gatherSeeds = True):
 
@@ -588,7 +651,9 @@ def allpossibles(inputlist, depth, gatherSeeds = True):
         for seed in checkmap:
             for pair in allpairs:
                 seeddepth = 1
-                if pair in checkmap[seed] or list(reversed(pair)) in checkmap[seed]:
+                if (pair in checkmap[seed]
+                         or list(reversed(pair))
+                         in checkmap[seed]):
                     seeddepthzero = -1
                     seeddepthone = -1
                     for seeds in templist:
@@ -631,16 +696,22 @@ def allpossibles(inputlist, depth, gatherSeeds = True):
     outputdepth = depth if len(templist) - 1 >= depth else len(templist) - 1
 
     if finallist:
-        keystring = "These are all the seeds that can be made in " + str(depth) + " steps:"
+        keystring = ("These are all the seeds that can be made in " +
+                     str(depth) + " steps:")
     else:
-        keystring = "No seeds can be made in " + str(depth) + " steps from the seeds given."
+        keystring = ("No seeds can be made in " + str(depth) +
+                     " steps from the seeds given.")
 
     output = {keystring: finallist}
 
     return output
 
 if __name__ == "__main__":
-    test = ["Krakka Root Seeds", "Mirror Apple Seeds", "Thavnairian Onion Seeds", "Chamomile Seeds", "Gysahl Green Seeds"]
+    test = ["Krakka Root Seeds",
+            "Mirror Apple Seeds",
+            "Thavnairian Onion Seeds",
+            "Chamomile Seeds",
+            "Gysahl Green Seeds"]
     testresult = ["Curiel Root Seeds"] # Blood Pepper Seeds
 
     output = calculatesteps(test, testresult, False)

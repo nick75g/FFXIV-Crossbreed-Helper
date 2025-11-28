@@ -38,3 +38,19 @@ If you have any suggestions or criticisms or if you find any bugs, feel free to 
 Also, tell others about this program! I hope to help as many people as possible, even if its with something as "banal" as this^^ If you think my work is worth money, please feel free to donate some on ko-fi.com/nick75 <3
 
 - nick75
+
+# NEW FEATURES! by kgetech:
+
+## A Quit Button:
+- Added a quit button to the program (Oooh, fancy!).
+
+## Export and Import Options:
+- Added export and import buttons for "Shortest Path" Inventory and Targets.
+- Added export and import button for "What Can You Make?" Inventory.
+- These save to sh_inventory.csv, sh_targets.csv and all_inventory.csv 
+  respectively.
+- TODO: Lots of code duplication, refactoring would be nice if we wanted to 
+  extend or expand this project.
+- Other Notes: I think nick75 did a great job with this project, and I 
+  think we could easily expand/extend this project if we do some 
+  re-arranging of the code.
